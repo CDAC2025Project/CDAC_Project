@@ -1,0 +1,4 @@
+../Src/bmp.c:8:17:read16	24	static
+../Src/bmp.c:21:16:readS16	16	static
+../Src/bmp.c:26:9:BMP280_Init	40	static
+../Src/bmp.c:75:9:BMP280_ReadPressure	16	static

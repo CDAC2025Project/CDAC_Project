@@ -1,0 +1,70 @@
+ #include "stm32f4xx.h"
+#include "uart.h"
+#include "spi.h"
+#include "oled.h"
+#include "i2c.h"
+#include "bmp.h"
+#include <stdio.h>
+
+/* tiny delay */
+static void delay_ms_approx(uint32_t ms)
+{
+    for (volatile uint32_t j = 0; j < ms * 2000; j++);
+}
+
+int main(void)
+{
+    char buffer[40];
+    int32_t pressure_raw;
+
+    /* Initialize UART for debug */
+    UartInit(115200);
+    UartPuts("\r\n========================================\r\n");
+    UartPuts("STM32F407 - OLED + BMP280 Pressure Display\r\n");
+    UartPuts("Author: Sagar\r\n");
+    UartPuts("========================================\r\n");
+
+    /* Initialize SPI (for OLED) */
+    SpiInit();
+
+    /* Initialize OLED */
+    OLED_Init();
+    OLED_Clear();
+
+    /* Display greeting */
+    OLED_SetCursor(0, 0);
+    OLED_PrintString("Hello Sagar");
+
+    /* Initialize I2C for BMP280 */
+    I2C_Init();
+    UartPuts("I2C Initialized.\r\n");
+
+    /* Initialize BMP280 */
+    if (BMP280_Init() != 0)
+    {
+        UartPuts("BMP280 Initialization Failed!\r\n");
+        while(1); // halt
+    }
+    else
+    {
+        UartPuts("BMP280 Initialized Successfully.\r\n");
+    }
+
+    while (1)
+    {
+        /* Read raw pressure */
+        pressure_raw = BMP280_ReadPressure();
+
+        /* Print to OLED (page 1) */
+        OLED_SetCursor(1, 0);
+        sprintf(buffer, "Pressure: %ld Pa  ", pressure_raw); // extra spaces to overwrite old digits
+        OLED_PrintString(buffer);
+
+        /* Print to UART */
+        sprintf(buffer, "BMP280 Pressure Raw: %ld Pa\r\n", pressure_raw);
+        UartPuts(buffer);
+
+        /* Delay 2s */
+        delay_ms_approx(2000);
+    }
+}

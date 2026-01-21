@@ -1,0 +1,94 @@
+ #include "bmp.h"
+#include "uart.h"
+
+BMP280_Calib bmp280_calib;
+int32_t t_fine;
+
+static uint16_t read16(uint8_t reg) {
+    I2CStart();
+    I2CSendSlaveAddr(BMP280_ADDR << 1);  // write
+    I2CSendData(reg);
+    I2CRepeatStart();
+    I2CSendSlaveAddr((BMP280_ADDR << 1) | 1); // read
+    uint8_t msb = I2CRecvDataAck();
+    uint8_t lsb = I2CRecvDataNAck();
+    I2CStop();
+    return (msb << 8) | lsb;
+}
+
+static int16_t readS16(uint8_t reg) {
+    return (int16_t)read16(reg);
+}
+
+uint8_t BMP280_Init(void) {
+    // check chip ID
+    I2CStart();
+    I2CSendSlaveAddr(BMP280_ADDR << 1);
+    I2CSendData(BMP280_REG_ID);
+    I2CRepeatStart();
+    I2CSendSlaveAddr((BMP280_ADDR << 1)|1);
+    uint8_t id = I2CRecvDataNAck();
+    I2CStop();
+    if(id != 0x58) {
+        char buf[30];
+        sprintf(buf, "BMP ID FAIL: 0x%02X\r\n", id);
+        UartPuts(buf);
+        return 1;  // fail
+    }
+    UartPuts("BMP ID OK\r\n");
+
+    // read calibration data
+    bmp280_calib.dig_P1 = read16(0x88);
+    bmp280_calib.dig_P2 = readS16(0x8A);
+    bmp280_calib.dig_P3 = readS16(0x8C);
+    bmp280_calib.dig_P4 = readS16(0x8E);
+    bmp280_calib.dig_P5 = readS16(0x90);
+    bmp280_calib.dig_P6 = readS16(0x92);
+    bmp280_calib.dig_P7 = readS16(0x94);
+    bmp280_calib.dig_P8 = readS16(0x96);
+    bmp280_calib.dig_P9 = readS16(0x98);
+
+    // ctrl_meas: normal mode, osrs_t = 0 (ignore), osrs_p = 1, mode = 3 (normal)
+    I2CStart();
+    I2CSendSlaveAddr(BMP280_ADDR << 1);
+    I2CSendData(BMP280_REG_CTRL_MEAS);
+    I2CSendData(0x27); // osrs_p = 1, mode = normal
+    I2CStop();
+
+    return 0;
+}
+
+// Read pressure in Pa
+int32_t BMP280_ReadPressure(void) {
+    // read raw pressure
+    I2CStart();
+    I2CSendSlaveAddr(BMP280_ADDR << 1);
+    I2CSendData(BMP280_REG_PRESS_MSB);
+    I2CRepeatStart();
+    I2CSendSlaveAddr((BMP280_ADDR << 1)|1);
+    uint8_t msb = I2CRecvDataAck();
+    uint8_t lsb = I2CRecvDataAck();
+    uint8_t xlsb = I2CRecvDataNAck();
+    I2CStop();
+
+    int32_t adc_P = ((int32_t)msb << 12) | ((int32_t)lsb << 4) | ((xlsb >> 4) & 0x0F);
+
+    // compensate pressure using calibration (ignoring temperature t_fine, simple)
+    int64_t var1, var2, p;
+    var1 = ((int64_t)t_fine) - 128000;
+    var2 = var1 * var1 * (int64_t)bmp280_calib.dig_P6;
+    var2 = var2 + ((var1 * (int64_t)bmp280_calib.dig_P5) << 17);
+    var2 = var2 + (((int64_t)bmp280_calib.dig_P4) << 35);
+    var1 = ((var1 * var1 * (int64_t)bmp280_calib.dig_P3) >> 8) +
+           ((var1 * (int64_t)bmp280_calib.dig_P2) << 12);
+    var1 = (((((int64_t)1) << 47) + var1)) * ((int64_t)bmp280_calib.dig_P1) >> 33;
+
+    if (var1 == 0) return 0; // avoid division by zero
+    p = 1048576 - adc_P;
+    p = (((p << 31) - var2) * 3125) / var1;
+    var1 = (((int64_t)bmp280_calib.dig_P9) * (p >> 13) * (p >> 13)) >> 25;
+    var2 = (((int64_t)bmp280_calib.dig_P8) * p) >> 19;
+    p = ((p + var1 + var2) >> 8) + (((int64_t)bmp280_calib.dig_P7) << 4);
+
+    return (int32_t)(p >> 8); // pressure in Pa
+}

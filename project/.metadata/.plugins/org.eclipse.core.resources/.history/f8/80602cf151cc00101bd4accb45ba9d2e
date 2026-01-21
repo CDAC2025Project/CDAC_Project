@@ -1,0 +1,81 @@
+/*
+ * dht11.c
+ *
+ *  Created on: Nov 26, 2025
+ *      Author: sunbeam
+ */
+
+
+#include "dht11.h"
+#include "uart.h"
+
+#define DHT11_PORT GPIOA
+#define DHT11_PIN  0
+
+// Microsecond delay function (blocking)
+void delay_us(uint32_t us) {
+    uint32_t count;
+    while(us--) {
+        for(count=0; count<8; count++);
+    }
+}
+
+// Configure pin as output
+void DHT11_PinOutput(void) {
+    DHT11_PORT->MODER &= ~(3 << (2*DHT11_PIN));
+    DHT11_PORT->MODER |=  (1 << (2*DHT11_PIN));
+}
+
+// Configure pin as input
+void DHT11_PinInput(void) {
+    DHT11_PORT->MODER &= ~(3 << (2*DHT11_PIN));
+}
+
+void DHT11_Init(void) {
+    DHT11_PinOutput();
+    DHT11_PORT->ODR |= (1 << DHT11_PIN); // HIGH
+}
+
+// Returns 0 on success, 1 on error
+uint8_t DHT11_Read(uint8_t *humidity, uint8_t *temperature) {
+    uint8_t data[5] = {0};
+    uint8_t i, j;
+
+    // Start signal
+    DHT11_PinOutput();
+    DHT11_PORT->ODR &= ~(1 << DHT11_PIN); // LOW
+    for(volatile int t=0; t<80000; t++);  // 18ms delay
+    DHT11_PORT->ODR |= (1 << DHT11_PIN);  // HIGH
+    delay_us(30);
+    DHT11_PinInput();
+
+    // Wait for DHT11 response
+    uint32_t timeout = 0;
+    while((DHT11_PORT->IDR & (1<<DHT11_PIN)) && timeout++ < 100000) {}
+    timeout = 0;
+    while(!(DHT11_PORT->IDR & (1<<DHT11_PIN)) && timeout++ < 100000) {}
+    timeout = 0;
+    while((DHT11_PORT->IDR & (1<<DHT11_PIN)) && timeout++ < 100000) {}
+
+    // Read 5 bytes
+    for(j=0; j<5; j++) {
+        for(i=0; i<8; i++) {
+            // Wait for LOW
+            timeout=0;
+            while(!(DHT11_PORT->IDR & (1<<DHT11_PIN)) && timeout++ < 100000) {}
+            // Measure length of HIGH
+            uint32_t len=0;
+            while((DHT11_PORT->IDR & (1<<DHT11_PIN))) len++;
+            if(len > 40) data[j] |= (1 << (7-i)); // > threshold -> 1
+            delay_us(10);
+        }
+    }
+
+    // Checksum
+    if(data[4] != (data[0]+data[1]+data[2]+data[3])) return 1;
+
+    *humidity    = data[0];
+    *temperature = data[2];
+
+    return 0;
+}

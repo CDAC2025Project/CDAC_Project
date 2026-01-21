@@ -1,0 +1,35 @@
+ #include "stm32f4xx.h"
+#include "uart.h"
+#include "spi.h"
+#include "oled.h"
+
+/* small delay */
+static void delay_ms_approx(uint32_t ms)
+{
+    for (volatile uint32_t j = 0; j < ms * 2000; j++);
+}
+
+/* Example 128x64 bitmap for HELLO SAGAR (8 pages) */
+const uint8_t helloBitmap[128*8] = {
+    // Fill each page with your pattern
+    // For simplicity, here I put all 0xFF to make solid blocks (replace with real design)
+    [0 ... (128*8-1)] = 0xFF
+};
+
+int main(void)
+{
+    UartInit(115200);
+    UartPuts("STM32F407 - OLED Design Demo\n");
+
+    SpiInit();
+    OLED_Init();
+    OLED_Clear();
+
+    OLED_DrawBitmap(helloBitmap, 128, 64);
+
+    while(1)
+    {
+        // Loop forever
+        delay_ms_approx(1000);
+    }
+}

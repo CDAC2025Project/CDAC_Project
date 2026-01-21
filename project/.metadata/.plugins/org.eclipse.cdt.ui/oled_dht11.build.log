@@ -1,0 +1,19 @@
+17:24:14 **** Incremental Build of configuration Debug for project oled_dht11 ****
+make -j8 all 
+arm-none-eabi-gcc -o "oled_dht11.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/sunbeam/project/oled_dht11/STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="oled_dht11.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+/opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld: ./Src/main.o: in function `main':
+/home/sunbeam/project/oled_dht11/Debug/../Src/main.c:13: multiple definition of `main'; ./Src/dht11.o:/home/sunbeam/project/oled_dht11/Debug/../Src/dht11.c:8: first defined here
+/opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld: ./Src/dht11.o: in function `main':
+/home/sunbeam/project/oled_dht11/Debug/../Src/dht11.c:9:(.text.main+0x6): undefined reference to `UART_Init'
+/opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld: /home/sunbeam/project/oled_dht11/Debug/../Src/dht11.c:12:(.text.main+0x12): undefined reference to `DHT11_Init'
+/opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld: /home/sunbeam/project/oled_dht11/Debug/../Src/dht11.c:14:(.text.main+0x18): undefined reference to `UART_Puts'
+/opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld: /home/sunbeam/project/oled_dht11/Debug/../Src/dht11.c:17:(.text.main+0x2c): undefined reference to `UART_Puts'
+/opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld: /home/sunbeam/project/oled_dht11/Debug/../Src/dht11.c:24:(.text.main+0x3c): undefined reference to `DHT11_Read'
+/opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld: /home/sunbeam/project/oled_dht11/Debug/../Src/dht11.c:35:(.text.main+0x94): undefined reference to `UART_Puts'
+/opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld: /home/sunbeam/project/oled_dht11/Debug/../Src/dht11.c:39:(.text.main+0x9c): undefined reference to `UART_Puts'
+collect2: error: ld returned 1 exit status
+make: *** [makefile:63: oled_dht11.elf] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+
+17:24:14 Build Failed. 9 errors, 0 warnings. (took 121ms)
+

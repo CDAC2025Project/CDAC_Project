@@ -1,0 +1,14 @@
+ #ifndef DHT11_H_
+#define DHT11_H_
+
+#include "stm32f4xx.h"
+
+/* ----------- Define DHT11 Pin ----------- */
+#define DHT11_PORT   GPIOB
+#define DHT11_PIN    5
+
+/* Function Prototypes */
+void DHT11_Init(void);
+uint8_t DHT11_Read(uint8_t *temperature, uint8_t *humidity);
+
+#endif /* DHT11_H_ */

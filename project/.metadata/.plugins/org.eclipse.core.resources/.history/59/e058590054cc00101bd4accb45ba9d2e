@@ -1,0 +1,86 @@
+ #include "dht11.h"
+
+/* ---------- Helper Functions ---------- */
+
+static void DHT11_PinOutput(void)
+{
+    DHT11_PORT->MODER &= ~(3 << (DHT11_PIN * 2));
+    DHT11_PORT->MODER |=  (1 << (DHT11_PIN * 2));   // Output
+}
+
+static void DHT11_PinInput(void)
+{
+    DHT11_PORT->MODER &= ~(3 << (DHT11_PIN * 2));   // Input
+}
+
+static void delay_us(uint32_t us)
+{
+    for(uint32_t i = 0; i < us * 16; i++);   // Approx for 16 MHz
+}
+
+/* ---------- Public Functions ---------- */
+
+void DHT11_Init(void)
+{
+    /* Enable GPIO clock */
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+
+    /* Set as input by default */
+    DHT11_PinInput();
+}
+
+/*
+ * Returns:
+ *   0 = OK
+ *   1 = No response
+ *   2 = Checksum error
+ */
+uint8_t DHT11_Read(uint8_t *temperature, uint8_t *humidity)
+{
+    uint8_t data[5] = {0};
+
+    /* ---- Start Signal ---- */
+    DHT11_PinOutput();
+    DHT11_PORT->ODR &= ~(1 << DHT11_PIN);  // LOW
+    delay_us(18000);                       // 18 ms
+
+    DHT11_PORT->ODR |= (1 << DHT11_PIN);   // HIGH
+    delay_us(20);
+
+    DHT11_PinInput();
+
+    /* ---- Check Response ---- */
+    delay_us(40);
+    if ( (DHT11_PORT->IDR & (1 << DHT11_PIN)) != 0 )
+        return 1;   // No response
+
+    delay_us(80);
+    if ( (DHT11_PORT->IDR & (1 << DHT11_PIN)) == 0 )
+        return 1;   // No response
+
+    delay_us(80);
+
+    /* ---- Read 40 Bits ---- */
+    for(int i = 0; i < 40; i++)
+    {
+        /* Wait for HIGH */
+        while( (DHT11_PORT->IDR & (1 << DHT11_PIN)) == 0 );
+
+        delay_us(40);
+
+        if (DHT11_PORT->IDR & (1 << DHT11_PIN))
+            data[i/8] |= (1 << (7 - (i % 8)));
+
+        /* Wait for LOW */
+        while( (DHT11_PORT->IDR & (1 << DHT11_PIN)) );
+    }
+
+    /* ---- Checksum ---- */
+    if (data[4] != (uint8_t)(data[0] + data[1] + data[2] + data[3]))
+        return 2;
+
+    *humidity    = data[0];
+    *temperature = data[2];
+
+    return 0;
+}

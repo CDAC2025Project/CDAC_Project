@@ -1,0 +1,10 @@
+18:38:27 **** Incremental Build of configuration Debug for project oled_bmp281 ****
+make -j8 all 
+arm-none-eabi-size  oled_bmp281.elf 
+   text	   data	    bss	    dec	    hex	filename
+   8100	     80	   1920	  10100	   2774	oled_bmp281.elf
+Finished building: default.size.stdout
+ 
+
+18:38:27 Build Finished. 0 errors, 0 warnings. (took 73ms)
+

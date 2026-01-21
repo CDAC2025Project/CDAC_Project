@@ -1,0 +1,10 @@
+../Src/oled.c:4:13:oled_delay_short	2
+../Src/oled.c:9:13:oled_delay_long	2
+../Src/oled.c:15:6:OLED_GPIO_Init	1
+../Src/oled.c:40:6:OLED_SendCommand	1
+../Src/oled.c:49:6:OLED_SendData	1
+../Src/oled.c:58:6:OLED_SetCursor	1
+../Src/oled.c:66:6:OLED_Init	1
+../Src/oled.c:109:6:OLED_Clear	3
+../Src/oled.c:122:6:OLED_PrintChar	4
+../Src/oled.c:133:6:OLED_PrintString	2

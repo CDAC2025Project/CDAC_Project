@@ -1,0 +1,10 @@
+16:17:28 **** Incremental Build of configuration Debug for project bmp281 ****
+make -j8 all 
+arm-none-eabi-size  bmp281.elf 
+   text	   data	    bss	    dec	    hex	filename
+   5308	     80	   1920	   7308	   1c8c	bmp281.elf
+Finished building: default.size.stdout
+ 
+
+16:17:28 Build Finished. 0 errors, 0 warnings. (took 87ms)
+

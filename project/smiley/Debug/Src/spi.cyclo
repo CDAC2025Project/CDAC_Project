@@ -1,0 +1,8 @@
+../Src/spi.c:3:6:SpiInit	1
+../Src/spi.c:41:6:SpiCSEnable	1
+../Src/spi.c:46:6:SpiCSDisable	1
+../Src/spi.c:51:10:SpiTransfer	3
+../Src/spi.c:59:6:SpiTransmit	1
+../Src/spi.c:64:10:SpiReceive	1
+../Src/spi.c:69:6:SpiWrite	2
+../Src/spi.c:78:6:SpiRead	2

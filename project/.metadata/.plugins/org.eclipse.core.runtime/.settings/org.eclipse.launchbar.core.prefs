@@ -1,0 +1,9 @@
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/name=Local
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=linux
+configDescList=org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:uart.c,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:dht11,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:bmp281,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:bmp280,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:oled2,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:smiley,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:oled_bmp281
+eclipse.preferences.version=1
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:OLED.c/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:OLED.c/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:bmp280/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:bmp280/activeLaunchTarget=null\:---

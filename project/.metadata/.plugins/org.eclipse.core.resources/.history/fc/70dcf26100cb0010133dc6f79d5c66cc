@@ -1,0 +1,56 @@
+
+#include "stm32f4xx.h"
+#include "i2c.h"
+#include "uart.h"
+#include "bmp.h"
+#include <stdio.h>
+
+// Simple delay (approximate ms)
+void delay_ms(uint32_t ms)
+{
+    for(uint32_t i=0; i < ms*16000; i++);
+}
+
+int main(void)
+{
+    char buf[50];
+    uint32_t pressure;
+
+    // Initialize UART
+    UartInit(115200);
+    UartPuts("UART OK\r\n");
+
+    // Initialize I2C
+    I2CInit();
+    UartPuts("I2C OK\r\n");
+
+    // Initialize BMP280
+    UartPuts("BMP280 INIT START\r\n");
+    if(BMP280_Init() == 0)
+        UartPuts("BMP280 INIT OK\r\n");
+    else
+    {
+        UartPuts("BMP280 INIT ERROR\r\n");
+        while(1); // Stop if BMP fails
+    }
+
+    // Read calibration values (optional debug)
+    sprintf(buf, "dig_P1=%u\r\n", bmp280_calib.dig_P1);
+    UartPuts(buf);
+    sprintf(buf, "dig_P2=%d\r\n", bmp280_calib.dig_P2);
+    UartPuts(buf);
+    sprintf(buf, "dig_P3=%d\r\n", bmp280_calib.dig_P3);
+    UartPuts(buf);
+
+    delay_ms(500);
+
+    // Main loop - read pressure repeatedly
+    while(1)
+    {
+        pressure = BMP280_ReadPressure();
+        sprintf(buf, "Pressure: %lu Pa\r\n", pressure);
+        UartPuts(buf);
+
+        delay_ms(1000); // 1-second delay
+    }
+}

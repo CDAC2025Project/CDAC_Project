@@ -1,0 +1,15 @@
+ #ifndef DHT11_H_
+#define DHT11_H_
+
+#include "stm32f4xx.h"
+
+/* Configure your pin here */
+#define DHT11_PORT      GPIOB
+#define DHT11_PIN       5
+#define DHT11_CLK_EN()  (RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN)
+
+/* API */
+void DHT11_Init(void);
+uint8_t DHT11_Read(uint8_t *temperature, uint8_t *humidity);
+
+#endif

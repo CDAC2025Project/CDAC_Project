@@ -1,0 +1,55 @@
+18:37:37 **** Incremental Build of configuration Debug for project smiley ****
+make -j8 all 
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
+arm-none-eabi-gcc "../Src/oled.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/oled.d" -MT"Src/oled.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/oled.o"
+In file included from ../Inc/oled.h:5,
+                 from ../Src/oled.c:1:
+../Inc/spi.h:13: warning: "BV" redefined
+   13 | #define BV(x)   (1U << (x))
+      | 
+In file included from ../Inc/oled.h:4:
+../Inc/stm32f4xx.h:228: note: this is the location of the previous definition
+  228 | #define BV(n)     (1 << (n))
+      | 
+In file included from ../Src/main.c:3:
+../Inc/spi.h:13: warning: "BV" redefined
+   13 | #define BV(x)   (1U << (x))
+      | 
+In file included from ../Src/main.c:1:
+../Inc/stm32f4xx.h:228: note: this is the location of the previous definition
+  228 | #define BV(n)     (1 << (n))
+      | 
+../Src/main.c: In function 'main':
+../Src/main.c:29:5: warning: implicit declaration of function 'OLED_DisplayBitmap'; did you mean 'OLED_DrawBitmap'? [-Wimplicit-function-declaration]
+   29 |     OLED_DisplayBitmap(smiley);
+      |     ^~~~~~~~~~~~~~~~~~
+      |     OLED_DrawBitmap
+../Src/main.c: At top level:
+../Src/main.c:7:13: warning: 'delay_ms' defined but not used [-Wunused-function]
+    7 | static void delay_ms(uint32_t ms) {
+      |             ^~~~~~~~
+arm-none-eabi-gcc -o "smiley.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/sunbeam/project/smiley/STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="smiley.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: smiley.elf
+ 
+arm-none-eabi-size  smiley.elf 
+arm-none-eabi-objdump -h -S smiley.elf  > "smiley.list"
+   text	   data	    bss	    dec	    hex	filename
+   2880	      0	   1568	   4448	   1160	smiley.elf
+Finished building: default.size.stdout
+ 
+Finished building: smiley.list
+ 
+18:37:50 **** Incremental Build of configuration Debug for project smiley ****
+make -j8 all 
+arm-none-eabi-size  smiley.elf 
+   text	   data	    bss	    dec	    hex	filename
+   2880	      0	   1568	   4448	   1160	smiley.elf
+Finished building: default.size.stdout
+ 
+18:38:27 **** Incremental Build of configuration Debug for project oled_bmp281 ****
+make -j8 all 
+arm-none-eabi-size  oled_bmp281.elf 
+   text	   data	    bss	    dec	    hex	filename
+   8100	     80	   1920	  10100	   2774	oled_bmp281.elf
+Finished building: default.size.stdout
+ 

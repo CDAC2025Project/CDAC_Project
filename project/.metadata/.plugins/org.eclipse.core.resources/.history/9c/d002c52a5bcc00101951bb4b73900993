@@ -1,0 +1,125 @@
+ #include "oled.h"
+
+/* small delay used for reset/timing */
+static void oled_delay_short(void)
+{
+    for (volatile int i = 0; i < 20000; i++);
+}
+
+static void oled_delay_long(void)
+{
+    for (volatile int i = 0; i < 400000; i++);
+}
+
+/* Initialize PB0 (DC) and PB1 (RES) as outputs */
+void OLED_GPIO_Init(void)
+{
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+
+    GPIOB->MODER &= ~((3U << (0*2)) | (3U << (1*2)));
+    GPIOB->MODER |=  ((1U << (0*2)) | (1U << (1*2)));
+
+    GPIOB->OTYPER &= ~((1U<<0) | (1U<<1));
+    GPIOB->OSPEEDR |= (3U << (0*2)) | (3U << (1*2));
+    GPIOB->PUPDR &= ~((3U << (0*2)) | (3U << (1*2)));
+
+    OLED_DC_LOW();
+    OLED_RES_HIGH();
+}
+
+/* Send single command byte over SPI */
+void OLED_SendCommand(uint8_t cmd)
+{
+    OLED_DC_LOW();
+    SpiCSEnable();
+    SpiTransmit(cmd);
+    SpiCSDisable();
+}
+
+/* Send single data byte over SPI */
+void OLED_SendData(uint8_t data)
+{
+    OLED_DC_HIGH();
+    SpiCSEnable();
+    SpiTransmit(data);
+    SpiCSDisable();
+}
+
+/* Set page and column cursor (0..7 pages, 0..127 columns) */
+void OLED_SetCursor(uint8_t page, uint8_t column)
+{
+    OLED_SendCommand(0xB0 + (page & 0x07));
+    OLED_SendCommand(column & 0x0F);
+    OLED_SendCommand(0x10 | ((column >> 4) & 0x0F));
+}
+
+/* Initialize SSD1306 via SPI */
+void OLED_Init(void)
+{
+    OLED_GPIO_Init();
+    SpiInit();
+
+    OLED_RES_LOW();
+    oled_delay_short();
+    OLED_RES_HIGH();
+    oled_delay_long();
+
+    OLED_SendCommand(0xAE);
+    OLED_SendCommand(0xD5); OLED_SendCommand(0x80);
+    OLED_SendCommand(0xA8); OLED_SendCommand(0x3F);
+    OLED_SendCommand(0xD3); OLED_SendCommand(0x00);
+    OLED_SendCommand(0x40);
+    OLED_SendCommand(0x8D); OLED_SendCommand(0x14);
+    OLED_SendCommand(0x20); OLED_SendCommand(0x00);
+    OLED_SendCommand(0xA1);
+    OLED_SendCommand(0xC8);
+    OLED_SendCommand(0xDA); OLED_SendCommand(0x12);
+    OLED_SendCommand(0x81); OLED_SendCommand(0xCF);
+    OLED_SendCommand(0xD9); OLED_SendCommand(0xF1);
+    OLED_SendCommand(0xDB); OLED_SendCommand(0x40);
+    OLED_SendCommand(0xA4);
+    OLED_SendCommand(0xA6);
+    OLED_SendCommand(0xAF);
+}
+
+/* Clear full display RAM */
+void OLED_Clear(void)
+{
+    for (uint8_t page = 0; page < 8; page++)
+    {
+        OLED_SetCursor(page, 0);
+        for (uint8_t col = 0; col < 128; col++)
+            OLED_SendData(0x00);
+    }
+}
+
+/* Print one 6x8 char */
+void OLED_PrintChar(char c)
+{
+    if (c < 32 || c > 127) c = '?';
+    uint8_t idx = (uint8_t)(c - 32);
+    for (int i = 0; i < 6; i++)
+        OLED_SendData(font6x8[idx][i]);
+}
+
+/* Print ASCII string */
+void OLED_PrintString(const char *str)
+{
+    while (*str)
+        OLED_PrintChar(*str++);
+}
+
+/* Draw bitmap on OLED */
+void OLED_DrawBitmap(const uint8_t *bitmap, uint8_t width, uint8_t height)
+{
+    uint8_t pages = (height + 7) / 8;
+
+    for(uint8_t page = 0; page < pages; page++)
+    {
+        OLED_SetCursor(page, 0);
+        for(uint8_t col = 0; col < width; col++)
+        {
+            OLED_SendData(bitmap[page * width + col]);
+        }
+    }
+}
