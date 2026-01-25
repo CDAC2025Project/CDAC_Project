@@ -1,9 +1,0 @@
-../Src/i2c.c:21:6:I2CInit	4	static
-../Src/i2c.c:66:6:I2CStart	4	static
-../Src/i2c.c:73:6:I2CRepeatStart	8	static
-../Src/i2c.c:78:6:I2CStop	4	static
-../Src/i2c.c:85:6:I2CSendSlaveAddr	24	static
-../Src/i2c.c:99:6:I2CSendData	24	static
-../Src/i2c.c:118:9:I2CRecvDataAck	16	static
-../Src/i2c.c:133:9:I2CRecvDataNAck	16	static
-../Src/i2c.c:153:6:I2CWrite	16	static
