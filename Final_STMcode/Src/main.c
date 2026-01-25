@@ -1,9 +1,7 @@
  /**
- ******************************************************************************
  * FreeRTOS Monitoring Unit Firmware
  * STM32 → Sensors → OLED → UART → ESP32
  * UART format: temp,humidity,pressure\n
- ******************************************************************************
  */
 
 #include <stdint.h>
@@ -22,7 +20,7 @@
 #include "i2c.h"
 #include "uart.h"
 
-/* ===================== Data Structures ===================== */
+//Data Structures 
 typedef struct
 {
     uint8_t temperature;
@@ -41,12 +39,12 @@ typedef struct
     int32_t pressure;
 } UART_Data_t;
 
-/* ===================== Queues ===================== */
+// Queues
 QueueHandle_t xDHT11Queue;
 QueueHandle_t xBMP280Queue;
 QueueHandle_t xUARTQueue;
 
-/* ===================== LED Task ===================== */
+// LED Task 
 void vAperiodicTask(void *pvParam)
 {
     for (;;)
@@ -56,7 +54,7 @@ void vAperiodicTask(void *pvParam)
     }
 }
 
-/* ===================== DHT11 Task ===================== */
+// DHT11 Task
 void vDHT11Task(void *pvParam)
 {
     DHT11_Data_t dhtData;
@@ -78,7 +76,7 @@ void vDHT11Task(void *pvParam)
     }
 }
 
-/* ===================== BMP280 Task ===================== */
+// BMP280 Task
 void vBMP280Task(void *pvParam)
 {
     BMP280_Data_t bmpData;
@@ -90,7 +88,7 @@ void vBMP280Task(void *pvParam)
 
     for (;;)
     {
-        /* Convert Pa → hPa (better for display) */
+        // Convert Pa → hPa 
         bmpData.pressure_raw = BMP280_ReadPressure() / 100;
 
         xQueueOverwrite(xBMP280Queue, &bmpData);
@@ -99,7 +97,7 @@ void vBMP280Task(void *pvParam)
     }
 }
 
-/* ===================== OLED Task ===================== */
+// OLED Task 
 void vOLEDTask(void *pvParam)
 {
     DHT11_Data_t dhtRx;
@@ -131,7 +129,7 @@ void vOLEDTask(void *pvParam)
             snprintf(buf, sizeof(buf), "Press: %ld hPa", bmpRx.pressure_raw);
             OLED_PrintString(buf);
 
-            /* Prepare UART packet */
+            // Preparing UART packet 
             uartData.temperature = dhtRx.temperature;
             uartData.humidity    = dhtRx.humidity;
             uartData.pressure    = bmpRx.pressure_raw;
@@ -141,7 +139,7 @@ void vOLEDTask(void *pvParam)
     }
 }
 
-/* ===================== UART Task (FIXED PART) ===================== */
+// UART Task 
 void vUARTTask(void *pvParam)
 {
     UART_Data_t rxData;
@@ -162,8 +160,6 @@ void vUARTTask(void *pvParam)
         }
     }
 }
-
-/* ===================== main ===================== */
 int main(void)
 {
     led_init();
