@@ -1,37 +1,26 @@
-/************************************************************
-   ESP32 Monitoring Unit  (FINAL CLEAN VERSION)
-
-   STM32 → UART → ESP32 → WiFi → Firebase RTDB
-
-   STM32 sends:
-   temp,humidity,pressure\n
-   Example: 26,55,1013
- ************************************************************/
+//ESP32 Monitoring Unit  (FINAL CLEAN VERSION)
+//STM32 → UART → ESP32 → WiFi → Firebase RTDB
 
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
 
-/**************** UART ****************/
+//UART 
 #define RXD2 16
 #define TXD2 17
 
-/**************** WIFI ****************/
+//WIFI 
 #define WIFI_SSID     "wifi"
 #define WIFI_PASSWORD "12345678"
 
-/**************** FIREBASE ****************/
-/* From your new Firebase project */
+// FIREBASE 
 #define API_KEY      "AIzaSyBJWKKQkyOJFT4PjntJ9R_ehr_AHdmiqHE"
-
-/* IMPORTANT: host only (no https, no slash) */
 #define DATABASE_URL "unit-89d9b-default-rtdb.asia-southeast1.firebasedatabase.app"
 
-/**************** FIREBASE OBJECTS ****************/
+// FIREBASE OBJECTS 
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-/**************** SETUP ****************/
 void setup()
 {
   Serial.begin(115200);
@@ -39,7 +28,7 @@ void setup()
 
   Serial.println("\n===== Monitoring Unit Booting =====");
 
-  /******** WiFi ********/
+  // WiFi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   Serial.print("Connecting WiFi");
@@ -62,8 +51,6 @@ void setup()
 
   Serial.println("Firebase Ready ✅");
 }
-
-/**************** LOOP ****************/
 void loop()
 {
   if (Serial2.available())
