@@ -1,0 +1,10 @@
+../Src/oled.c:5:13:oled_delay_short	16	static
+../Src/oled.c:11:13:oled_delay_long	16	static
+../Src/oled.c:19:6:OLED_GPIO_Init	4	static
+../Src/oled.c:41:6:OLED_SendCommand	16	static
+../Src/oled.c:50:6:OLED_SendData	16	static
+../Src/oled.c:59:6:OLED_SetCursor	16	static
+../Src/oled.c:67:6:OLED_Init	8	static
+../Src/oled.c:103:6:OLED_Clear	16	static
+../Src/oled.c:116:6:OLED_PrintChar	24	static
+../Src/oled.c:128:6:OLED_PrintString	16	static
